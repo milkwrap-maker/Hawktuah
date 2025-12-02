@@ -86,15 +86,15 @@ Fluent:Notify({
     Duration = 8
 })
 Fluent:Notify({
-    Title = "Added Invis",
-    Content = "Added dragons invis script",
+    Title = "Fixes",
+    Content = "Finally fixed flight and made it mobile friendly",
     Duration = 8
 })
 
 setclipboard("https://discord.gg/8Js4Nhn7y3")
 AddScriptToggle(Tabs.Movement, "Backflip", "Backflip", "T normal backflip E super jump", "https://raw.githubusercontent.com/gyyfyu/test2/refs/heads/main/obf_cj7o6P7567nEPA1xVqYZcv51ezWc7DOCzS475N108rwGEiEVi9688kJErn1g68ep.lua")
 AddScriptToggle(Tabs.Utility, "TrainButton", "Train Button", "Creates a train button", "https://raw.githubusercontent.com/milkwrap-maker/Hawktuah/refs/heads/main/trainbutton")
-AddScriptToggle(Tabs.Movement, "Fly", "Fly", "X to fly", "https://raw.githubusercontent.com/gyyfyu/test2/refs/heads/main/no%20key%20system/fly.lua")
+AddScriptToggle(Tabs.Movement, "Fly", "Fly", "X to fly", "https://raw.githubusercontent.com/milkwrap-maker/Hawktuah/refs/heads/main/flight")
 AddScriptToggle(Tabs.Movement, "Teleport", "Teleport", "press C to activate", "https://raw.githubusercontent.com/gyyfyu/test2/refs/heads/main/no%20key%20system/teleport.lua")
 AddScriptToggle(Tabs.Combat, "Lockon", "Lock on", "press J to toggle between on and off, press RIGHT MOUSE BUTTON to actually lock on and unlock,  You lock to the nearest person to your crosshair", "https://raw.githubusercontent.com/milkwrap-maker/Hawktuah/refs/heads/main/lockon")
 AddScriptToggle(Tabs.Combat, "Small Hitbox", "Small Hitbox", "Shrinks your hitbox", "https://raw.githubusercontent.com/milkwrap-maker/Hawktuah/refs/heads/main/gubby")
