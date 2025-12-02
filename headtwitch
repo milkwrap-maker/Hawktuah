@@ -1,0 +1,33 @@
+local p, UIS = game.Players.LocalPlayer, game:GetService("UserInputService")
+local animId, spam, track, hum = "rbxassetid://121158593063065", false, nil, nil
+local anim = Instance.new("Animation") anim.AnimationId = animId
+
+local function spamAnim()
+	if spam or not hum then return end
+	spam = true
+	task.spawn(function()
+		while spam and hum do
+			track = hum:LoadAnimation(anim)
+			track:Play()
+			task.wait(track.Length > 0 and track.Length or 1)
+		end
+	end)
+end
+
+local function stopAnim()
+	spam = false
+	if track then track:Stop() end
+end
+
+local function setup(c)
+	hum = c:WaitForChild("Humanoid")
+	if spam then spamAnim() end
+end
+
+if p.Character then setup(p.Character) end
+p.CharacterAdded:Connect(setup)
+
+UIS.InputBegan:Connect(function(i,g)
+	if g or i.KeyCode ~= Enum.KeyCode.M then return end
+	if spam then stopAnim() else spamAnim() end
+end)

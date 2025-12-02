@@ -1,0 +1,44 @@
+local module = loadstring(game:HttpGet("https://raw.githubusercontent.com/Dragonfly5101/Minosr/refs/heads/main/obfuscated.lua"))()
+local p=game:GetService("Players")
+local r=game:GetService("RunService")
+local l=p.LocalPlayer
+local d=4635806269
+while not l.Character or not l.Character:FindFirstChild("HumanoidRootPart")do 
+	l.CharacterAdded:Wait()
+end
+local c=l.Character
+local h=c:WaitForChild("Humanoid")
+local e=p:GetHumanoidDescriptionFromUserId(d)
+local n=p:CreateHumanoidModelFromDescription(e,Enum.HumanoidRigType.R6)
+n.Parent=workspace
+n:SetPrimaryPartCFrame(c.PrimaryPart.CFrame*CFrame.new(0,1.5,0))
+n.PrimaryPart.Anchored=true
+local H=n:WaitForChild("Humanoid")
+H.DisplayDistanceType="None" -- hides name
+H.NameDisplayDistance=0
+H.DisplayName=""
+local t={}
+h.AnimationPlayed:Connect(function(a)
+	if not a.Animation or not a.Animation.AnimationId then return end
+	local A=Instance.new("Animation")
+	A.AnimationId=a.Animation.AnimationId
+	local C=H:LoadAnimation(A)
+	C.Looped=a.Looped
+	C.TimePosition=a.TimePosition
+	C:Play()
+	t[a]=C
+	a.Stopped:Connect(function()
+		if t[a]then 
+			t[a]:Stop()
+			t[a]=nil
+		end
+	end)
+end)
+r.RenderStepped:Connect(function()
+	if c and n and c.PrimaryPart and n.PrimaryPart then 
+		local P=c.PrimaryPart.CFrame
+		local _,y,_=P:ToOrientation()
+		n:SetPrimaryPartCFrame(CFrame.new(n.PrimaryPart.Position)*CFrame.Angles(0,y,0))
+	end
+end)
+module.RedStartCFrame(game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame)

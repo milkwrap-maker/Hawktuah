@@ -1,0 +1,24 @@
+local P, UIS = game.Players.LocalPlayer, game:GetService("UserInputService")
+local animId = "rbxassetid://140557689031802"
+local loopAnim, hum, track, playing = Instance.new("Animation"), nil, nil, false
+loopAnim.AnimationId = animId
+
+local function setup(c)
+	hum = c:WaitForChild("Humanoid")
+	if track then track:Stop() track, playing = nil, false end
+end
+
+P.CharacterAdded:Connect(setup)
+if P.Character then setup(P.Character) end
+
+UIS.InputBegan:Connect(function(i,g)
+	if g or i.KeyCode ~= Enum.KeyCode.L or not hum then return end
+	if playing then
+		if track then track:Stop() track = nil end
+	else
+		track = hum:LoadAnimation(loopAnim)
+		track.Looped = true
+		track:Play()
+	end
+	playing = not playing
+end)

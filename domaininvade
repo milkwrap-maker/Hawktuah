@@ -1,0 +1,5 @@
+for _, obj in pairs(workspace:WaitForChild("Domains"):GetDescendants()) do
+	if obj:IsA("BasePart") then
+		obj.CanCollide = false
+	end
+end

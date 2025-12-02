@@ -1,0 +1,13 @@
+local logic = workspace:WaitForChild("Logic")
+
+for _, part in pairs(logic:GetChildren()) do
+	local icon = part:FindFirstChild("Core") and part.Core:FindFirstChild("Icon")
+	if icon and icon:IsA("BillboardGui") then
+		icon.Enabled = true
+	end
+	
+	local outline = part:FindFirstChild("Outline")
+	if outline and outline:IsA("SelectionBox") then
+		outline.Visible = true
+	end
+end

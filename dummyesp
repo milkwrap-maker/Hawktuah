@@ -1,0 +1,30 @@
+local S = game:GetService
+local RS, P = S("RunService"), S("Players").LocalPlayer
+local Chars = workspace:WaitForChild("Characters")
+
+local NAME = "Dummy"
+local FILL, OUT = Color3.new(0,0,0), Color3.new(0,0,0)
+
+local function addHighlight(m)
+	if not (m and m:IsA("Model")) or m:FindFirstChildWhichIsA("Highlight") then return end
+	local h = Instance.new("Highlight")
+	h.FillColor, h.OutlineColor, h.DepthMode, h.Parent = FILL, OUT, Enum.HighlightDepthMode.AlwaysOnTop, m
+end
+
+local function watch(m)
+	addHighlight(m)
+	coroutine.wrap(function()
+		while m.Parent do addHighlight(m) task.wait(1) end
+	end)()
+end
+
+local function check()
+	local d = Chars:FindFirstChild(NAME)
+	if d then watch(d) end
+end
+
+Chars.ChildAdded:Connect(function(c)
+	if c.Name == NAME then watch(c) end
+end)
+
+check()
