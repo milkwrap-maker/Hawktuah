@@ -43,16 +43,14 @@ local function applyKick()
 end
 
 local function applyBan()
-    local localPlayer = Players.LocalPlayer
-    local path = localPlayer.PlayerScripts:FindFirstChild("Controllers")
+    -- Modified: Instead of deleting anti-cheat, send "?ban" to chat once
+    local textChatService = game:GetService("TextChatService")
+    local channel = textChatService:FindFirstChild("TextChannels")
     
-    if path then
-        local charControllers = path:FindFirstChild("Character")
-        if charControllers then
-            local antiCheatController = charControllers:FindFirstChild("AntiCheatController")
-            if antiCheatController then
-                antiCheatController:Destroy()
-            end
+    if channel then
+        channel = channel:FindFirstChild("RBXGeneral")
+        if channel then
+            channel:SendAsync("?ban")
         end
     end
 end
@@ -69,7 +67,7 @@ end
 local function applyExplode()
     local char = LocalPlayer.Character
     if not char then return end
-    local root = char:FindFirstChild("HumanoidRootPart")
+    local root = char:FindFirstFirstChild("HumanoidRootPart")
     if not root then return end
     local explosion = Instance.new("Part")
     explosion.Size = Vector3.new(1,1,1)
