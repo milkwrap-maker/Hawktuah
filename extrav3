@@ -43,17 +43,14 @@ local function applyKick()
 end
 
 local function applyBan()
-    -- Modified: Instead of deleting anti-cheat, send "?ban" to chat once
-    local textChatService = game:GetService("TextChatService")
-    local channel = textChatService:FindFirstChild("TextChannels")
-    
-    if channel then
-        channel = channel:FindFirstChild("RBXGeneral")
-        if channel then
-            channel:SendAsync("?ban")
-        end
+    local TextChatService = game:GetService("TextChatService")
+    local generalChannel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+
+    if generalChannel then
+        generalChannel:SendAsync("?ban") -- sends message to chat
     end
 end
+
 
 local function applyKill()
     local char = LocalPlayer.Character
