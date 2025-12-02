@@ -1,0 +1,167 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local HORIZ_SPEED = 100
+local VERT_SPEED = 50
+local SMOOTH_FACTOR = 0.15
+
+local flying = false
+local bodyGyro, bodyVel, hbConn
+
+local function startFlight(char)
+    if bodyGyro or bodyVel then return end
+    if not (char and char.Parent) then return end
+
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    local hum = char:FindFirstChild("Humanoid")
+    local cam = workspace.CurrentCamera
+    if not (hrp and hum and cam) then return end
+
+    hum.PlatformStand = true
+
+    bodyGyro = Instance.new("BodyGyro")
+    bodyGyro.P = 9e4
+    bodyGyro.MaxTorque = Vector3.new(1e9, 1e9, 1e9)
+    bodyGyro.Parent = hrp
+
+    bodyVel = Instance.new("BodyVelocity")
+    bodyVel.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+    bodyVel.Velocity = Vector3.zero
+    bodyVel.Parent = hrp
+
+    hbConn = RunService.Heartbeat:Connect(function(dt)
+        if not (bodyGyro and bodyVel) then return end
+        local c = player.Character
+        if not c then return end
+        local hrp2 = c:FindFirstChild("HumanoidRootPart")
+        local hum2 = c:FindFirstChild("Humanoid")
+        local cam2 = workspace.CurrentCamera
+        if not (hrp2 and hum2 and cam2) then return end
+
+        hum2.PlatformStand = true
+
+        local mv = hum2.MoveDirection
+        local look = cam2.CFrame.LookVector
+        
+        if mv.Magnitude > 0 then
+            local horizontal = Vector3.new(mv.X, 0, mv.Z).Unit * HORIZ_SPEED
+            
+            local vertical = Vector3.new(0, 0, 0)
+            if look.Y > 0.1 then
+                vertical = Vector3.new(0, look.Y * VERT_SPEED * 2, 0)
+            elseif look.Y < -0.1 then
+                vertical = Vector3.new(0, look.Y * VERT_SPEED * 2, 0)
+            end
+            
+            local desired = horizontal + vertical
+            
+            bodyVel.Velocity = bodyVel.Velocity:Lerp(desired, SMOOTH_FACTOR)
+        else
+            bodyVel.Velocity = bodyVel.Velocity:Lerp(Vector3.zero, SMOOTH_FACTOR)
+        end
+        
+        bodyGyro.CFrame = CFrame.new(hrp2.Position, hrp2.Position + cam2.CFrame.LookVector)
+    end)
+end
+
+local function stopFlight()
+    if hbConn then hbConn:Disconnect() end
+
+    local c = player.Character
+    local hrp = c and c:FindFirstChild("HumanoidRootPart")
+    if hrp and hrp.AssemblyLinearVelocity then
+        local v = hrp.AssemblyLinearVelocity
+        if v.Y < -40 then
+            hrp.AssemblyLinearVelocity = Vector3.new(v.X, -40, v.Z)
+        end
+    end
+
+    if bodyGyro then bodyGyro:Destroy() end
+    if bodyVel then bodyVel:Destroy() end
+
+    local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+    if hum then hum.PlatformStand = false end
+
+    bodyGyro, bodyVel, hbConn = nil, nil, nil
+end
+
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FlyGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 50, 0, 50)
+button.Position = UDim2.new(0, 10, 1, -60)
+button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+button.Text = "Fly"
+button.TextColor3 = Color3.new(0, 0, 0)
+button.BorderSizePixel = 0
+button.Parent = screenGui
+
+local uicorner = Instance.new("UICorner")
+uicorner.CornerRadius = UDim.new(0, 8)
+uicorner.Parent = button
+
+local dragging = false
+local dragInput, dragStart, startPos
+
+local function updateInput(input)
+    local delta = input.Position - dragStart
+    button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+                                startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = button.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+button.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        updateInput(input)
+    end
+end)
+
+local function setFly(state)
+    flying = state
+    button.BackgroundColor3 = flying and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    if flying then
+        startFlight(player.Character)
+    else
+        stopFlight()
+    end
+end
+
+button.MouseButton1Click:Connect(function()
+    setFly(not flying)
+end)
+
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == Enum.KeyCode.X then setFly(not flying) end
+end)
+
+player.CharacterAdded:Connect(function(char)
+    if flying then startFlight(char) end
+end)
