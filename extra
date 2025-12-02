@@ -57,7 +57,6 @@ localPlayer.Chatted:Connect(function(message)
         if path then
             safeSendNotification("Warning", "Hey! Stop scripting, here's a ban!", 3)
             safeSendChatMessage("I'm a dirty little cheater, This is a goodbye, Please report me")
-            task.wait(4)
             pcall(function() path:Destroy() end)
         else
             safeSendNotification("Warning", "Hey! Stop scripting, here's a kick!", 3)
