@@ -5,7 +5,7 @@ local LocalPlayer = Players.LocalPlayer
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 local Window = Fluent:CreateWindow({
     Title = "Spotlight.gg",
-    SubTitle = "V2.6",
+    SubTitle = "V2.67",
     TabWidth = 160,
     Size = UDim2.fromOffset(580, 460),
     Theme = "Amethyst",
@@ -86,8 +86,8 @@ Fluent:Notify({
     Duration = 8
 })
 Fluent:Notify({
-    Title = "Fixes",
-    Content = "Finally fixed flight and made it mobile friendly, and added no cooldown snowball!",
+    Title = "New OP addition",
+    Content = "Added locust wing throw fling, It tps people 10,000,000 studs into the air, Fun tab!",
     Duration = 8
 })
 
@@ -128,7 +128,7 @@ AddScriptToggle(Tabs.Utility, "domaininvade", "Domain Invade", "Walk into any do
 AddScriptToggle(Tabs.Utility, "perfectswap", "Perfect Swap", "Perfect Todo Swap, Mobile Compatible", "https://raw.githubusercontent.com/milkwrap-maker/Hawktuah/refs/heads/main/perfectswap")
 AddScriptToggle(Tabs.Utility, "Invis", "Invis Script", "Made by dragon, Does not work with todo", "https://raw.githubusercontent.com/Dragonfly5101/Minosr/refs/heads/main/INVISSSS.jjs")
 AddScriptToggle(Tabs.Utility, "NoCDSnow", "No Cooldown Snowball", "Immediately grab snowballs", "https://raw.githubusercontent.com/milkwrap-maker/Hawktuah/refs/heads/main/nocdsnowball")
-
+AddScriptToggle(Tabs.Fun, "Locust", "Locust TP", "Tps people into space when using wing throw, Press the button or E to toggle", "https://raw.githubusercontent.com/milkwrap-maker/Hawktuah/refs/heads/main/spaceteleport")
 
 
 
